@@ -1,10 +1,12 @@
 {
-  "name": "myapp",
+  "name": "isitalatte-app",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "github-fork-ribbon-css": "^0.2.1",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
+    "react-dropzone": "^6.0.2",
     "react-scripts": "2.0.4"
   },
   "scripts": {
@@ -13,13 +15,13 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
   "browserslist": [
     ">0.2%",
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "devDependencies": {
+    "standard": "^12.0.1"
+  }
 }
