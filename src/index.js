@@ -41,7 +41,7 @@ class LatteClassifier extends React.Component {
       <div className='latte-classifier'>
         <a
           className='github-fork-ribbon right-top'
-          href='https://github.com/calid/isitalatte'
+          href='https://github.com/calid/isitalatte-app'
           data-ribbon='Fork me on GitHub'
           title='Fork me on GitHub'>
           Fork me on GitHub
