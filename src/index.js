@@ -41,9 +41,13 @@ class LatteClassifier extends React.Component {
       <div className='latte-classifier'>
         <a
           className='github-fork-ribbon right-top'
-          href='https://github.com/calid/isitalatte-app'
           data-ribbon='Fork me on GitHub'
-          title='Fork me on GitHub'>
+          title='Fork me on GitHub'
+          onClick={
+            function () {
+              window.open('https://github.com/calid/isitalatte-app')
+            }
+          }>
           Fork me on GitHub
         </a>
         <h1 className='title-banner'>Is it a latte?</h1>

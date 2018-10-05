@@ -2,6 +2,7 @@
 
 .github-fork-ribbon::before {
   background-color: #af5114;
+  cursor: pointer;
 }
 
 .latte-classifier {
