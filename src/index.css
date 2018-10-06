@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css?family=Pacifico');
+
+.github-fork-ribbon::before {
+  background-color: #af5114;
+  cursor: pointer;
+}
+
+.latte-classifier {
+  margin: auto;
+  width: 50%;
+  padding: 300px 0px;
+  text-align: center;
+}
+
+.title-banner {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  text-align: center;
+  text-rendering: optimizeLegibility;
+  font-size: 60px;
+  color: #505156;
+  font-family: 'Pacifico', cursive;
+}
+
+.latte-probability {
+  margin-top: -25px;
+  margin-bottom: 30px;
+}
+
+.target-image {
+  width: 300px;
+  height: auto;
+  margin-top: -135px;
+  margin-bottom: 50px;
+}
+
+.dropzone {
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  font-family: Roboto, "Open Sans", sans-serif;
+  font-size: 20px;
+  font-kerning: auto;
+  color: rgb(100, 108, 127);
+  text-rendering: optimizeLegibility;
+  cursor: pointer;
+  border: 2px dashed #0087F7;
+  border-radius: 5px;
+  background: white;
+  position: absolute;
+  padding: 125px 0px;
+  box-sizing: border-box;
+}
