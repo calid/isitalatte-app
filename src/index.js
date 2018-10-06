@@ -1,4 +1,4 @@
-/* global FileReader */
+/* global FileReader, btoa */
 import SockJS from 'sockjs-client'
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -74,14 +74,15 @@ class ImageTester extends React.Component {
     const image = e.target.files[0]
     const r = new FileReader()
     r.onload = () => {
-      const data = r.result
-      this.state.msgQueue.push([image, data])
+      const buffer = r.result
+      const b64Data = btoa(String.fromCharCode(...new Uint8Array(buffer)))
+      this.state.msgQueue.push([image, b64Data])
 
       console.log('Sending image data for', image.name)
       this.flushMsgQueue()
     }
 
-    r.readAsBinaryString(image)
+    r.readAsArrayBuffer(image)
   }
 
   render () {

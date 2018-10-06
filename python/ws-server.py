@@ -2,10 +2,14 @@ import asyncio
 import os
 from aiohttp import web
 import sockjs
+import base64
 
 async def process_image(msg, session):
     if (msg.data):
-        print('got image')
+        imgdata = base64.b64decode(msg.data)
+        imgfile = open('/tmp/img.jpg', 'wb')
+        imgfile.write(imgdata)
+        print('wrote /tmp/img.jpg')
 
 def index(request):
     return web.Response
