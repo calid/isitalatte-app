@@ -38,7 +38,10 @@ class ImageTester extends React.Component {
       this.flushMsgQueue()
     }
 
-    sock.onmessage = this.handleMsgRcvd
+    sock.onmessage = (e) => {
+      const result = e.data
+      console.log('Prediction result:', result)
+    }
 
     sock.onclose = () => {
       console.log(apiUrl, 'disconnected')
@@ -66,16 +69,21 @@ class ImageTester extends React.Component {
     }
   }
 
-  handleImgResult (e) {
-    console.log('message', e.data)
-  }
-
   handleFileUpload (e) {
     const image = e.target.files[0]
     const r = new FileReader()
     r.onload = () => {
       const buffer = r.result
-      const b64Data = btoa(String.fromCharCode(...new Uint8Array(buffer)))
+      const bytes = new Uint8Array(buffer)
+
+      let bytestr = ''
+      let len = bytes.byteLength
+
+      for (let i = 0; i < len; i++) {
+        bytestr += String.fromCharCode(bytes[i])
+      }
+
+      const b64Data = btoa(bytestr)
       this.state.msgQueue.push([image, b64Data])
 
       console.log('Sending image data for', image.name)
