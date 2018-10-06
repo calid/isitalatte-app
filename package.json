@@ -22,6 +22,7 @@
     "not op_mini all"
   ],
   "devDependencies": {
+    "@tensorflow/tfjs": "^0.13.1",
     "standard": "^12.0.1"
   }
 }
