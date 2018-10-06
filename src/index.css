@@ -23,6 +23,11 @@
   font-family: 'Pacifico', cursive;
 }
 
+.latte-probability {
+  margin-top: -25px;
+  margin-bottom: 30px;
+}
+
 .target-image {
   width: 300px;
   height: auto;
