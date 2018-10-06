@@ -32,7 +32,7 @@ class LatteClassifier extends React.Component {
     let image = null
 
     if (imageUrl) {
-      image = (<img className='target-image' src={imageUrl} />)
+      image = (<img className='target-image' src={imageUrl} alt='' />)
     } else {
       image = (<div />)
     }
@@ -40,6 +40,7 @@ class LatteClassifier extends React.Component {
     return (
       <div className='latte-classifier'>
         <a
+          href='https://github.com/calid/isitalatte-app'
           className='github-fork-ribbon right-top'
           data-ribbon='Fork me on GitHub'
           title='Fork me on GitHub'
