@@ -1,12 +1,14 @@
+/* global Image, FileReader, btoa */
+
 import React from 'react'
 import ReactDOM from 'react-dom'
 import Dropzone from 'react-dropzone'
-import * as tf from '@tensorflow/tfjs'
+import SockJS from 'sockjs-client'
 import 'github-fork-ribbon-css/gh-fork-ribbon.css'
 import './index.css'
 
-const MODEL_PATH = 'http://127.0.0.1:8080/model.json'
-const IMAGE_SIZE = 150
+const CONNECTED = 'connected'
+const DISCONNECTED = 'disconnected'
 
 class LatteClassifier extends React.Component {
   constructor (props) {
@@ -14,63 +16,96 @@ class LatteClassifier extends React.Component {
     this.state = {
       imageUrl: '',
       imagePreview: (<div />),
-      latteProbability: (<div />),
-      model: null
+      apiUrl: 'http://localhost:8081/sockjs',
+      sock: null,
+      sockState: DISCONNECTED,
+      msgQueue: []
+    }
+  }
+
+  connect () {
+    const apiUrl = this.state.apiUrl
+
+    console.log('Connecting to', apiUrl)
+    const sock = new SockJS(apiUrl)
+
+    this.setState({
+      sock: sock
+    })
+
+    sock.onopen = () => {
+      console.log('Established connection to', apiUrl)
+      this.setState({
+        sockState: CONNECTED
+      })
+
+      this.flushMsgQueue()
     }
 
-    this.loadModel()
+    sock.onmessage = (e) => {
+      const result = e.data
+      console.log('Prediction result:', result)
+    }
+
+    sock.onclose = () => {
+      console.log(apiUrl, 'disconnected')
+      this.setState({
+        sockState: DISCONNECTED
+      })
+
+      if (this.state.msgQueue.length) {
+        console.log('Server unavailable, retrying to send image data in 5s')
+        setTimeout(this.flushMsgQueue.bind(this), 5000)
+      }
+    }
   }
 
-  async loadModel () {
-    console.log('loading model...')
-    const model = await tf.loadModel(MODEL_PATH)
-    this.setState({
-      model: model
-    })
+  flushMsgQueue () {
+    if (this.state.sockState === DISCONNECTED) {
+      this.connect()
+    } else {
+      const q = this.state.msgQueue
+      const [image, data] = q[q.length - 1]
 
-    // model.summary()
-    model.predict(tf.zeros([1, IMAGE_SIZE, IMAGE_SIZE, 3])).dispose()
+      this.state.sock.send(data)
+      console.log('Image data for', image.name, 'sent')
+      q.pop()
+    }
   }
 
-  displayResult (result) {
-    // result is probability image is not a latte,
-    // so subtract from one to get latte probability
-    const probability = 1.0 - result
-    const latteProbability = (
-      <p className='latte-probability'>Latte: {probability.toFixed(3)}</p>
-    )
-    this.setState({
-      latteProbability: latteProbability
-    })
-  }
+  handleFileUpload (imageFile) {
+    const r = new FileReader()
+    r.onload = () => {
+      const buffer = r.result
+      const bytes = new Uint8Array(buffer)
 
-  async predictIsLatte (img) {
-    const prediction = tf.tidy(() => {
-      let imgTensor = tf.fromPixels(img).toFloat()
+      let bytestr = ''
+      let len = bytes.byteLength
 
-      // scale values between 0 and 1
-      imgTensor = imgTensor.div(tf.scalar(255))
+      for (let i = 0; i < len; i++) {
+        bytestr += String.fromCharCode(bytes[i])
+      }
 
-      imgTensor = imgTensor.expandDims(0)
-      imgTensor = tf.image.resizeBilinear(imgTensor, [150, 150])
+      const b64Data = btoa(bytestr)
+      this.state.msgQueue.push([imageFile, b64Data])
 
-      return this.state.model.predict(imgTensor)
-    })
+      console.log('Sending imageFile data for', imageFile.name)
+      this.flushMsgQueue()
+    }
 
-    const result = await prediction.data()
-    this.displayResult(result[0])
+    r.readAsArrayBuffer(imageFile)
   }
 
   onImageDrop (acceptedFiles, rejectedFiles) {
     const imageFile = acceptedFiles[0]
-    const reader = new window.FileReader()
+    const reader = new FileReader()
 
     reader.onloadend = () => {
       let imageUrl = reader.result
       let imagePreview = (<img className='target-image' src={imageUrl} alt='' />)
-      let image = new window.Image()
+      let image = new Image()
 
-      image.onloadend = () => this.predictIsLatte(image)
+      image.onloadend = () => this.handleFileUpload(imageFile)
       image.src = imageUrl
 
       this.setState({
