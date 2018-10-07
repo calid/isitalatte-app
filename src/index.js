@@ -1,4 +1,4 @@
-/* global Image, FileReader, btoa */
+/* global alert, Image, FileReader, btoa */
 
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -16,6 +16,7 @@ class LatteClassifier extends React.Component {
     this.state = {
       imageUrl: '',
       imagePreview: (<div />),
+      predictionResult: (<div />),
       apiUrl: 'http://localhost:8081/sockjs',
       sock: null,
       sockState: DISCONNECTED,
@@ -44,7 +45,7 @@ class LatteClassifier extends React.Component {
 
     sock.onmessage = (e) => {
       const result = e.data
-      console.log('Prediction result:', result)
+      this.displayResult(result)
     }
 
     sock.onclose = () => {
@@ -58,6 +59,34 @@ class LatteClassifier extends React.Component {
         setTimeout(this.flushMsgQueue.bind(this), 5000)
       }
     }
+  }
+
+  displayResult (r) {
+    console.log('Prediction result:', r)
+
+    const result = JSON.parse(r)
+
+    let resultMsg = ''
+    let resultEmoji = ''
+    if (result.image_class === 'latte') {
+      resultMsg = "It's a latte!"
+      resultEmoji = './Noto_Emoji_Oreo_1f600.svg'
+    } else if (result.image_class === 'not-latte') {
+      resultMsg = 'Not a latte'
+      resultEmoji = './Noto_Emoji_Oreo_1f61e.svg'
+    } else {
+      resultMsg = 'Not sure if latte?'
+      resultEmoji = './Noto_Emoji_Oreo_1f914.svg'
+    }
+
+    this.setState({
+      predictionResult: (
+        <div>
+          <p className='result-msg'>{resultMsg} </p>
+          <img className='result-emoji' src={resultEmoji} />
+        </div>
+      )
+    })
   }
 
   flushMsgQueue () {
@@ -135,7 +164,7 @@ class LatteClassifier extends React.Component {
         </a>
         <h1 className='title-banner'>Is it a latte?</h1>
         {this.state.imagePreview}
-        {this.state.latteProbability}
+        {this.state.predictionResult}
         <Dropzone
           className='dropzone'
           accept='image/*'
