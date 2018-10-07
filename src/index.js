@@ -139,7 +139,8 @@ class LatteClassifier extends React.Component {
         <Dropzone
           className='dropzone'
           accept='image/*'
-          onDrop={this.onImageDrop.bind(this)}>
+          onDrop={this.onImageDrop.bind(this)}
+          disablePreview>
           <p>Drop an image to classify or click to upload</p>
         </Dropzone>
       </div>
