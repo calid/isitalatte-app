@@ -1,4 +1,4 @@
-/* global alert, Image, FileReader, btoa */
+/* global Image, FileReader, btoa */
 
 import React from 'react'
 import ReactDOM from 'react-dom'
@@ -93,7 +93,7 @@ class LatteClassifier extends React.Component {
             <p className='result-p'>Not-Latte: {notLatteProbability}</p>
           </div>
         </div>
-      ),
+      )
     })
   }
 
