@@ -17,6 +17,7 @@ class LatteClassifier extends React.Component {
       imageUrl: '',
       imagePreview: (<div />),
       predictionResult: (<div />),
+      resultConfidence: (<div />),
       apiUrl: 'http://localhost:8081/sockjs',
       sock: null,
       sockState: DISCONNECTED,
@@ -79,13 +80,20 @@ class LatteClassifier extends React.Component {
       resultEmoji = './Noto_Emoji_Oreo_1f914.svg'
     }
 
+    const latteProbability = result.latte_prob
+    const notLatteProbability = result.not_latte_prob
+
     this.setState({
       predictionResult: (
-        <div>
+        <div className='result-box'>
           <p className='result-msg'>{resultMsg} </p>
           <img className='result-emoji' src={resultEmoji} />
+          <div className='result-confidence'>
+            <p className='result-p'>Latte: {latteProbability}</p>
+            <p className='result-p'>Not-Latte: {notLatteProbability}</p>
+          </div>
         </div>
-      )
+      ),
     })
   }
 
