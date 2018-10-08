@@ -69,6 +69,22 @@ class LatteClassifier extends React.Component {
 
     let resultMsg = ''
     let resultEmoji = ''
+
+    if (result.error) {
+      resultMsg = 'Something went wrong, please try a different file'
+
+      this.setState({
+        imagePreview: (<img className='target-image' src='./fail.svg' alt='' />),
+        predictionResult: (
+          <div className='result-box'>
+            <p className='result-msg-error'>{resultMsg} </p>
+          </div>
+        )
+      })
+
+      return
+    }
+
     if (result.image_class === 'latte') {
       resultMsg = "It's a latte!"
       resultEmoji = './Noto_Emoji_Oreo_1f600.svg'

@@ -1,5 +1,6 @@
 import asyncio
 import os
+import traceback
 import sockjs
 import base64
 import numpy as np
@@ -13,11 +14,10 @@ import tensorflow as tf
 # suppress a warning about unused cpu instructions
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-model_file = 'isitalatte.h5'
 normalize_img_module = tf.load_op_library('./normalize_image.so')
 
-print(f"Loading model from {model_file}")
-MODEL = tf.keras.models.load_model(model_file)
+print(f"Loading model isitalatte.h5...")
+MODEL = tf.keras.models.load_model('isitalatte.h5')
 print('Done.')
 
 def process_img(imgdata):
@@ -50,29 +50,38 @@ def process_img(imgdata):
     return score
 
 async def handle_msg(msg, session):
-    if (msg.data):
-        imgdata = base64.b64decode(msg.data)
+    try:
+        if (msg.data):
+            imgdata = base64.b64decode(msg.data)
 
-        # result is probability image belongs to Class 1
-        # Class 0: Latte
-        # Class 1: Not-Latte
-        # (determined during training)
-        not_latte_prob = process_img(imgdata)
-        latte_prob     = 1.0 - not_latte_prob
+            # result is probability image belongs to Class 1
+            # Class 0: Latte
+            # Class 1: Not-Latte
+            # (determined during training)
+            not_latte_prob = process_img(imgdata)
+            latte_prob     = 1.0 - not_latte_prob
 
-        if latte_prob >= 0.7:
-            img_class = 'latte'
-        elif not_latte_prob >= 0.7:
-            img_class = 'not-latte'
-        else:
-            img_class = 'unsure'
+            if latte_prob >= 0.7:
+                img_class = 'latte'
+            elif not_latte_prob >= 0.7:
+                img_class = 'not-latte'
+            else:
+                img_class = 'unsure'
 
-        # format as json our client can easily consume
+            # format as json our client can easily consume
+            session.send(
+                json.dumps({
+                    'image_class': img_class,
+                    'latte_prob': "%0.3f" % latte_prob,
+                    'not_latte_prob': "%0.3f" % not_latte_prob
+                })
+            )
+    except:
+        traceback.print_exc()
+
         session.send(
             json.dumps({
-                'image_class': img_class,
-                'latte_prob': "%0.3f" % latte_prob,
-                'not_latte_prob': "%0.3f" % not_latte_prob
+                'error': traceback.format_exc()
             })
         )
 
