@@ -6,6 +6,7 @@ import Dropzone from 'react-dropzone'
 import SockJS from 'sockjs-client'
 import 'github-fork-ribbon-css/gh-fork-ribbon.css'
 import './index.css'
+import './spinner.css'
 
 const CONNECTED = 'connected'
 const DISCONNECTED = 'disconnected'
@@ -164,7 +165,12 @@ class LatteClassifier extends React.Component {
       this.setState({
         imageUrl: imageUrl,
         imagePreview: imagePreview,
-        image: image
+        image: image,
+        predictionResult: (
+          <div className='result-box'>
+            <div className='lds-ring'><div /><div /><div /><div /></div>
+          </div>
+        )
       })
     }
 
