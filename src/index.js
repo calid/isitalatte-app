@@ -10,6 +10,7 @@ import './spinner.css'
 
 const CONNECTED = 'connected'
 const DISCONNECTED = 'disconnected'
+const WAITING = 'waiting'
 
 class LatteClassifier extends React.Component {
   constructor (props) {
@@ -52,6 +53,12 @@ class LatteClassifier extends React.Component {
 
     sock.onclose = () => {
       console.log(apiUrl, 'disconnected')
+
+      if (this.state.sockState === WAITING) {
+        // message dropped, possibly related to large file uploads
+        this.displayError()
+      }
+
       this.setState({
         sockState: DISCONNECTED
       })
@@ -63,28 +70,31 @@ class LatteClassifier extends React.Component {
     }
   }
 
+  displayError () {
+    const resultMsg = 'Something went wrong, please try a different file'
+
+    this.setState({
+      imagePreview: (<img className='target-image' src='./fail.svg' alt='' />),
+      predictionResult: (
+        <div className='result-box'>
+          <p className='result-msg-error'>{resultMsg} </p>
+        </div>
+      )
+    })
+  }
+
   displayResult (r) {
     console.log('Prediction result:', r)
 
     const result = JSON.parse(r)
 
-    let resultMsg = ''
-    let resultEmoji = ''
-
     if (result.error) {
-      resultMsg = 'Something went wrong, please try a different file'
-
-      this.setState({
-        imagePreview: (<img className='target-image' src='./fail.svg' alt='' />),
-        predictionResult: (
-          <div className='result-box'>
-            <p className='result-msg-error'>{resultMsg} </p>
-          </div>
-        )
-      })
-
+      this.displayError()
       return
     }
+
+    let resultMsg = ''
+    let resultEmoji = ''
 
     if (result.image_class === 'latte') {
       resultMsg = "It's a latte!"
@@ -124,6 +134,9 @@ class LatteClassifier extends React.Component {
       this.state.sock.send(data)
       console.log('Image data for', image.name, 'sent')
       q.pop()
+      this.setState({
+        sockState: WAITING
+      })
     }
   }
 
