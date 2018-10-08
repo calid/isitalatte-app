@@ -13,7 +13,8 @@ import tensorflow as tf
 # suppress a warning about unused cpu instructions
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-model_file = '/home/calid/git/isitalatte/isitalatte.h5'
+model_file = 'isitalatte.h5'
+normalize_img_module = tf.load_op_library('./normalize_image.so')
 
 print(f"Loading model from {model_file}")
 MODEL = tf.keras.models.load_model(model_file)
@@ -34,9 +35,12 @@ def process_img(imgdata):
 
     img_tensor = decode_funcs[imgtype](imgdata, channels=3)
     img_tensor = tf.image.resize_images(img_tensor, [150, 150])
-    img_array  = tf.Session().run(img_tensor)
-    img_array /= 255.
-    img_array = np.expand_dims(img_array, axis=0)
+    img_array  = img_tensor
+
+    with tf.Session().as_default():
+        img_array = img_tensor.eval()
+        img_array = normalize_img_module.normalize_image(img_array).eval()
+        img_array = np.expand_dims(img_array, axis=0)
 
     print('Running model prediction')
     result = MODEL.predict(img_array)
