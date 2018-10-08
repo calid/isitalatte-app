@@ -47,6 +47,10 @@ class LatteClassifier extends React.Component {
     }
 
     sock.onmessage = (e) => {
+      this.setState({
+        sockState: CONNECTED
+      })
+
       const result = e.data
       this.displayResult(result)
     }
