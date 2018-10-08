@@ -1,5 +1,6 @@
 import asyncio
 import os
+import sys
 import traceback
 import sockjs
 import base64
@@ -100,6 +101,7 @@ if __name__ == '__main__':
         loop.create_server(handler, '127.0.0.1', 8081))
 
     print('Server started at http://127.0.0.1:8081')
+    sys.stdout.flush()
 
     try:
         loop.run_forever()
