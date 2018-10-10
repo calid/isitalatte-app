@@ -171,12 +171,12 @@ class LatteClassifier extends React.Component {
     const imageFile = acceptedFiles[0]
     const reader = new FileReader()
 
-    reader.onloadend = () => {
+    reader.onload = () => {
       let imageUrl = reader.result
       let imagePreview = (<img className='target-image' src={imageUrl} alt='' />)
       let image = new Image()
 
-      image.onloadend = () => this.handleFileUpload(imageFile)
+      image.onload = () => this.handleFileUpload(imageFile)
       image.src = imageUrl
 
       this.setState({
