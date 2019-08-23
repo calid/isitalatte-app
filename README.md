@@ -1,8 +1,7 @@
 ## Description
 
 This is a web frontend for a latte image classifier written using React,
-python 3, and websockets. A live version of this site is at
-http://isitalatte.com. The image classifier code is at
+python 3, and websockets. The image classifier code is at
 https://github.com/calid/isitalatte.
 
 ## Install
