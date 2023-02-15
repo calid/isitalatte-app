@@ -20,5 +20,5 @@ sockjs==0.8.0
 tensorboard==1.11.0
 tensorflow==2.9.3
 termcolor==1.1.0
-werkzeug==0.15.3
+werkzeug==2.2.3
 yarl==1.2.6
